@@ -1,0 +1,41 @@
+h1 {
+	font-size: 60px;
+}
+
+h3 {
+	font-size: 40px;
+}
+
+h4 {
+	font-size: 30px;
+}
+
+select, input, button {
+	display: block;
+	font-size: 25px;
+	margin: 10px auto;
+	padding: 5px;
+	width: 90%;
+}
+
+#menu {
+	background-color: #000000;
+	bottom: 0;
+	font-size: 30px;
+	position: fixed;
+	width: 100%;
+}
+
+#menu a {
+	border-right: 2px solid #FFFFFF;
+	color: #FFFFFF;
+	display: inline-block;
+	padding: 10px;
+	text-align: center;
+	text-decoration: none;
+	width: 27%;
+}
+
+#menu a:last-child {
+	border-right: 2px solid #000000;
+}

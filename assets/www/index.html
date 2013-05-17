@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8" />
+        <meta name="format-detection" content="telephone=no" />
+        <meta name="viewport" content="user-scalable=no, initial-scale=1, maximum-scale=1, minimum-scale=1, width=device-width, height=device-height, target-densitydpi=device-dpi" />
+        <link href="css/jquery.mobile.custom.theme.min.css" rel="stylesheet" />
+        <link href="css/jquery.mobile.custom.structure.min.css" rel="stylesheet" />
+        <script src="js/jquery-1.9.1.min.js"></script>
+        <script src="js/config-jqm.js"></script>
+        <script src="js/jquery.mobile.custom.min.js"></script>
+    </head>
+    <body>
+        <div data-role="page" id="main" data-theme="a">
+        	<div data-role="header">
+        		<h1>Contador de Bebidas</h1>
+        		<a href="#config" data-role="button" data-icon="gear" class="ui-btn-right" data-transition="flip">Config</a>
+        	</div>
+        	<div data-role="content">
+        		<select>
+		        	<option>Cerveja</option>
+		        	<option>Whiskey</option>
+		        	<option>Caipiroska</option>
+		        </select>
+		        <button type="button">Mais uma...</button>
+		        <div id="cerveja"></div>
+		        <a href="conta.html" data-role="button">Fechar Conta</a>
+        	</div>
+	        <div data-role="footer" data-position="fixed">
+	        	<div data-role="navbar">
+	        		<ul>
+	        			<li><a href="#main">Main</a></li>
+	        			<li><a href="#social">Social</a></li>
+	        		</ul>
+	        	</div>
+	        </div>
+        </div>
+        
+        <div data-role="page" id="config">
+        	<div data-role="header">
+        		<h1>Contador de Bebidas</h1>
+        		<a href="#main" data-role="button" data-icon="home" class="ui-btn-right" data-rel="back">Main</a>
+        	</div>
+        	<div data-role="content">
+        		<h3>Doses por Bebida</h3>
+		        <select id="bebida">
+		        	<option>Cerveja</option>
+		        	<option>Whiskey</option>
+		        	<option>Caipiroska</option>
+		        </select>
+	        	<input type="number" id="doses" name="doses" />
+	        	<button id="salvar-doses" type="button">Salvar</button>
+        	</div>
+	    	<div data-role="footer" data-position="fixed">
+	        	<div data-role="navbar">
+	        		<ul>
+	        			<li><a href="#main" data-direction="reverse">Main</a></li>
+	        			<li><a href="#social">Social</a></li>
+	        		</ul>
+	        	</div>
+	        </div>
+        </div>
+        
+        <div data-role="page" id="social">
+        	<div data-role="header">
+        		<h1>Contador de Bebidas</h1>
+        		<a href="#config" data-role="button" data-icon="gear" class="ui-btn-right" data-transition="flip">Config</a>
+        	</div>
+        	<div data-role="content">
+        		<h3>Social</h3>
+		        <h4>Companheiros de bebida</h4>
+		        <ul id="lista-contatos" data-role="listview" data-inset="true" data-filter="true" data-filter-placeholder="Digite um nome"></ul>
+		        <form action="#">
+		        	Onde bebi<br/>
+		        	<input type="text" name="local" id="local" />
+		        	<br/><br/>
+		        	<button type="button">Salvar</button>
+		        	<button type="button">Facebook</button>
+		        </form>
+        	</div>
+	        <div data-role="footer" data-position="fixed">
+	        	<div data-role="navbar">
+	        		<ul>
+	        			<li><a href="#main">Main</a></li>
+	        			<li><a href="#social">Social</a></li>
+	        		</ul>
+	        	</div>
+	        </div>
+        </div>
+        
+        <script type="text/javascript" src="js/cordova-2.7.0.js"></script>
+        <script type="text/javascript">
+        	$(document).on("deviceready", function () {
+        		var db = window.openDatabase("contadorbebidas", "1.0", "cont", 100000);
+        		db.transaction(function (tr) {
+        			tr.executeSql("CREATE TABLE IF NOT EXISTS doses (id INTEGER PRIMARY KEY AUTOINCREMENT, bebida TEXT NOT NULL, doses INTEGER NOT NULL)");
+        		}, function (erro) { alert(erro.message); }, function () { return; });
+        	});
+        
+        	$("#salvar-doses").on("click", function () {
+        		var $bebida = $("#bebida"),
+        			$doses = $("#doses");
+        			
+    			var db = window.openDatabase("contadorbebidas", "1.0", "cont", 100000);
+    			db.transaction(function (tr) {
+    				tr.executeSql("INSERT INTO doses (bebida, doses) VALUES (?, ?)", [$bebida.val(), $doses.val()], function (tr, res) {
+    					alert("Linhas salvas: " + res.affectedRows);
+    				}, function (erro) { alert("Erro ao salvar no BD!"); });
+    			}, function (erro) { alert(erro.message); }, function () { return; });
+        	});
+        
+        	$("#social").on("pagebeforeshow", function () {
+        		var options = new ContactFindOptions();
+	        	options.multiple = true;
+	        	// id, displayName, name (givenName, familyName), nickname
+	        	// phoneNumbers, emails, addresses, ims, organizations, etc
+	        	navigator.contacts.find(["displayName"], listarContatos, erroContato, options);
+	        	
+	        	function listarContatos(contatos) {
+	        		var $lista = $("#lista-contatos");
+	        		$lista.html("");
+	        		
+	        		for (var i = 0; i < contatos.length; i++) {
+	        			var contato = contatos[i];
+	        			$lista.append("<li>" + contato.displayName + "</li>");
+	        		}
+	        		
+	        		$lista.listview("refresh");
+	        	}
+	        	
+	        	function erroContato() {
+	        		alert("Erro de Contatos");
+	        	}
+        	});
+        </script>
+    </body>
+</html>
